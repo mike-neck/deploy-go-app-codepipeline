@@ -1,0 +1,21 @@
+version: 0.2
+
+env:
+  parameter-store:
+    bucket: "deploy-lambda-example-bucket"
+
+phases:
+  install:
+    commands:
+      - make dep
+  build:
+    commands:
+      - make build
+  post_build:
+    commands:
+      - aws cloudformation package --template-file template.yml --s3-bucket $(bucket) --output-template-file deploy.yml
+artifacts:
+  type: zip
+  files:
+    - template.yml
+    - deploy.yml
