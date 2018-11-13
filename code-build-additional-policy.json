@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "ssm:GetParameters",
+        "ssm:GetParameter",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:ssm:__region__:__account__:parameter/*",
+        "arn:aws:kms:__region__:__account__:key/*",
+        "arn:aws:s3:::*/*"
+      ]
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": "s3:GetBucketVersioning",
+      "Resource": "arn:aws:s3:::*"
+    }
+  ]
+}

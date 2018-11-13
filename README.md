@@ -75,8 +75,69 @@ CodePipeline
     * テンプレート設定 : 空白
     * 機能 : CAPABILITY_IAM
     * ロール名 : 最初に作成したサービスロール
-1. パイプラインを作ると自動でビルドが走るが以下の原因により成功することはない
-    * CodeBuild が S3 にオブジェクトを置けない
-    * CodeBuild がパラメーターストアの値を取得できない
-    * Stack がない
-    * Change Set がない
+
+なお、ここまでの操作はCLIでやることができるっぽいけど、調べてない
+
+パイプラインを作ると自動でビルドが走るが以下の原因により成功することはない
+
+* CodeBuild が S3 にオブジェクトを書き込めない
+* CodeBuild がパラメーターストアの値を取得できない
+
+---
+
+### Build ステップを通す
+
+CodeBuild のポリシーが足りない件については以下のjsonで表されるポリシーを CodeBuild 用のロールに追加する
+
+`code-build-additional-policy.json`
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "ssm:GetParameters",
+        "ssm:GetParameter",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:ssm:__region__:__account__:parameter/*",
+        "arn:aws:kms:__region__:__account__:key/*",
+        "arn:aws:s3:::*/*"
+      ]
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": "s3:GetBucketVersioning",
+      "Resource": "arn:aws:s3:::*"
+    }
+  ]
+}
+``` 
+
+次のように処理すると必要なJSONが取得できる。
+
+```bash
+sed "s/__region__/ap-northeast-1/g" code-build-additional-policy.json | sed "s/__account__/"$(aws sts get-caller-identity --query 'Account' --output text)"/g"
+```
+
+デプロイ
+---
+
+CodePipeline でビルドが成功して、何事もなく Stack と Change Set が作成されると、
+アプリケーションはデプロイのレビュー状態になる。
+
+* CodePipeline の Deploy のところにある Deploy(AWS CloudFormation)の詳細リンクから Change Set の画面に飛ぶと、
+これから生成されるリソースの一覧を参照できる。
+* Change Set の画面の右上の「実行」ボタンをクリックするとレビューの承認、 Change Set の反映をおこない、アプリケーションがデプロイされる
+* 作成された API は残念ながら CloudFormation の画面からは直接進めるリンクがない(API Gateway へのリンクならある)ので、
+API Gateway の画面を開いてそれらしい API があることを探す
+    * 一応 CloudFormation の Stack のリソースをみると、 `ServerlessRestApi` というIDのリソースがあるので、
+その物理IDがAPIの URL に設定される
