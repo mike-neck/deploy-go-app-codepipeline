@@ -9,6 +9,7 @@ phases:
     commands:
       - make dep
       - aws ssm get-parameter --name deploy-lambda-example-bucket --with-decryption --query "Parameter.Name" --output text
+      - echo $(bucket)
   build:
     commands:
       - make build
