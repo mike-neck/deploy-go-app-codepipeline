@@ -11,7 +11,7 @@ Resources:
       Runtime: go1.x
       Tracing: Active
       Events:
-        CatchAll:
+        GoAppApi:
           Type: Api
           Properties:
             Path: /
@@ -19,13 +19,13 @@ Resources:
 
 Outputs:
   GoAppAPI:
-    Description: "API Gateway endpoint URL for Prod environment for First Function"
+    Description: "API Gateway endpoint URL for Prod environment for GoApp"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
 
   GoAppFunction:
-    Description: "Lambda Function ARN"
+    Description: "GoApp ARN"
     Value: !GetAtt GoAppFunction.Arn
 
   GoAppFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for GoApp"
     Value: !GetAtt GoAppFunctionRole.Arn
