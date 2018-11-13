@@ -47,6 +47,7 @@ func Handle(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIG
 	}
 
 	code := request.Status
+	log.Println("normal", "request status", code)
 	switch code {
 	case http.StatusOK:
 	case http.StatusCreated:
