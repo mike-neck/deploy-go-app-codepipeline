@@ -69,8 +69,8 @@ CodePipeline
 1. CodePipeline に戻り次へをクリックしてデプロイを次の通り入力する. なお、この段階で CloudFormation の stack が作られていないので、 ValidationError が発生する
     * デプロイプロバイダ : AWS CloudFormation
     * アクションモード : 変更セットの作成または置換
-    * スタックの名前 : deploy-go-app-stack
-    * 変更セット名 : deploy-go-app-cs
+    * スタックの名前 : 任意の名前
+    * 変更セット名 : 任意の名前
     * テンプレート : BuildArtifact::deploy.yml (この段階でビルドアーティファクトの名前がわからないのに入力させるの不親切)
     * テンプレート設定 : 空白
     * 機能 : CAPABILITY_IAM
